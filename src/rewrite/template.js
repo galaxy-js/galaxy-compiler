@@ -12,10 +12,11 @@ const SKIP_OPEN_TEMPLATE = 2
  *
  * @param {string} template - String with interpolation tags
  * @param {string} pragma
+ * @param {string} filterPragma
  *
  * @return {string}
  */
-export function getTemplateExpression (template, pragma) {
+export function getTemplateExpression (template, pragma, filterPragma) {
   let expressions = []
   let prevTemplateEnd = 0
 
@@ -48,7 +49,7 @@ export function getTemplateExpression (template, pragma) {
           }
 
           try {
-            expressions.push(`${pragma}(${getFilterExpression(expression)})`)
+            expressions.push(`${pragma}(${getFilterExpression(expression, filterPragma)})`)
           } catch (error) {
             throw new GalaxyCompilerError(`\n\nError in template expression...\n${error.message.trimStart()}`, error.location)
           }

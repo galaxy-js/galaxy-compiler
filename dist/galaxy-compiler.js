@@ -593,10 +593,11 @@
    *
    * @param {string} template - String with interpolation tags
    * @param {string} pragma
+   * @param {string} filterPragma
    *
    * @return {string}
    */
-  function getTemplateExpression (template, pragma) {
+  function getTemplateExpression (template, pragma, filterPragma) {
     let expressions = [];
     let prevTemplateEnd = 0;
 
@@ -629,7 +630,7 @@
             }
 
             try {
-              expressions.push(`${pragma}(${getFilterExpression(expression)})`);
+              expressions.push(`${pragma}(${getFilterExpression(expression, filterPragma)})`);
             } catch (error) {
               throw new GalaxyCompilerError(`\n\nError in template expression...\n${error.message.trimStart()}`, error.location)
             }
@@ -698,7 +699,7 @@
      * @return {Function}
      */
     compileTemplate (template) {
-      return this.compileGetter(getTemplateExpression(template, this.pragma.template))
+      return this.compileGetter(getTemplateExpression(template, this.pragma.template, this.pragma.filter))
     }
 
     /**

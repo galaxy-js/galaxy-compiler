@@ -52,7 +52,7 @@ export default class Compiler {
    * @return {Function}
    */
   compileTemplate (template) {
-    return this.compileGetter(getTemplateExpression(template, this.pragma.template))
+    return this.compileGetter(getTemplateExpression(template, this.pragma.template, this.pragma.filter))
   }
 
   /**
