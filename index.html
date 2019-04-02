@@ -18,7 +18,7 @@
       }
     })
 
-    const templateFn = compiler.compileTemplate('Hello, {{ name }}')
+    const templateFn = compiler.compileTemplate('Hello, "{{ name }}"')
 
     console.log(templateFn(), templateFn({ name: 'Andrés' }))
   </script>

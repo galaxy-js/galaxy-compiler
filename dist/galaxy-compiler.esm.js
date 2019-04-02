@@ -592,8 +592,8 @@ const SKIP_OPEN_TEMPLATE = 2;
  * @return {string}
  */
 function getTemplateExpression (template, pragma, filterPragma) {
-  let expressions = [];
   let prevTemplateEnd = 0;
+  const expressions = [];
 
   function tryPushContext (context) {
     if (context) {
@@ -601,11 +601,14 @@ function getTemplateExpression (template, pragma, filterPragma) {
     }
   }
 
-  analyze.expression(template, state => {
-    if (state.is(tokens$1.OPEN_TEMPLATE) && state.is(tokens$1.OPEN_TEMPLATE, -1)) {
+  const { length } = template;
+  const state = new State(template);
+
+  for (let i = 0; i < length; i++) {
+    if (template[i] === tokens$1.OPEN_TEMPLATE && template[i - 1] === tokens$1.OPEN_TEMPLATE) {
       let depth = 1;
 
-      const templateStart = state.advance().cursor;
+      const templateStart = state.cursor = ++i;
 
       analyze.expression(state, templateState => {
         if (templateState.is(tokens$1.OPEN_TEMPLATE)) {
@@ -635,8 +638,11 @@ function getTemplateExpression (template, pragma, filterPragma) {
           return analyze.STOP
         }
       });
+
+      // Update current index
+      i = state.cursor;
     }
-  });
+  }
 
   tryPushContext(template.slice(prevTemplateEnd));
 

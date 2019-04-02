@@ -17,8 +17,8 @@ const SKIP_OPEN_TEMPLATE = 2
  * @return {string}
  */
 export function getTemplateExpression (template, pragma, filterPragma) {
-  let expressions = []
   let prevTemplateEnd = 0
+  const expressions = []
 
   function tryPushContext (context) {
     if (context) {
@@ -26,11 +26,14 @@ export function getTemplateExpression (template, pragma, filterPragma) {
     }
   }
 
-  analyzer.expression(template, state => {
-    if (state.is(tokens.OPEN_TEMPLATE) && state.is(tokens.OPEN_TEMPLATE, -1)) {
+  const { length } = template
+  const state = new State(template)
+
+  for (let i = 0; i < length; i++) {
+    if (template[i] === tokens.OPEN_TEMPLATE && template[i - 1] === tokens.OPEN_TEMPLATE) {
       let depth = 1
 
-      const templateStart = state.advance().cursor
+      const templateStart = state.cursor = ++i
 
       analyzer.expression(state, templateState => {
         if (templateState.is(tokens.OPEN_TEMPLATE)) {
@@ -60,8 +63,11 @@ export function getTemplateExpression (template, pragma, filterPragma) {
           return analyzer.STOP
         }
       })
+
+      // Update current index
+      i = state.cursor
     }
-  })
+  }
 
   tryPushContext(template.slice(prevTemplateEnd))
 
